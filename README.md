@@ -21,7 +21,7 @@ yarn add web3.js-thk
 Use the `web3` object directly from the global namespace:
 
 ```js
-var Web3 = require('web3');
+var Web3 = require('web3.js-thk');
 var web3 = new Web3();
 console.log(web3); // {thk: .., shh: ...} // It's here!
 ```
