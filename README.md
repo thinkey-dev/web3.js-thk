@@ -39,7 +39,7 @@ var account = web3.thk.GetAccount(chainId,address);
 var balance = account.balance;
 ```
 
-You can find more examples in the [`example`](https://github.com/ethereum/web3.js/tree/master/example) directory.
+You can find more examples in the [`example`](https://github.com/thinkey-dev/web3.js-thk/tree/master/example) directory.
 
 # Thinkey Web3.js SDK接口文档
 
