@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script type="text/javascript" src="../node_modules/bignumber.js/bignumber.min.js"></script>
+<script type="text/javascript" src="../dist/web3-light.js"></script>
+<script type="text/javascript">
+   
+    var Web3 = require('web3');
+    var web3 = new Web3();
+    web3.setProvider(new web3.providers.HttpProvider('http://test.thinkey.xyz'));
+
+    function getAccount() {
+        let account = web3.thk.GetAccount('2', '0x2c7536e3605d9c16a7a3d7b1898e529396a65c23');
+        
+        document.getElementById('address').innerText = 'address: ' + account.address;
+        document.getElementById('balance').innerText = 'balance: ' + account.balance;
+    }
+
+</script>
+</head>
+<body>
+    <h1>thinkey account</h1>
+    <button type="button" onClick="getAccount();">get accounts</button>
+    <div></div>
+    <div id="address"></div>
+    <div id="balance"></div>
+</body>
+</html>
+
