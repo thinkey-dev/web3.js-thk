@@ -34,10 +34,10 @@ function sleep(delay) {
 
 let str = '0x000000022c7536e3605d9c16a7a3d7b1898e529396a65c23000000000000005a000000032c7536e3605d9c16a7a3d7b1898e529396a65c2300000000000093c72000000000000000000000000000000000000000000000000000038d7ea4c68000'
 var getAccounts = web3.thk.GetAccount(web3.thk.defaultChainId, web3.thk.defaultAddress);
-console.log("get account :", getAccounts);
+// console.log("get account :", getAccounts);
 
 let inputData = deCashInput(str);
-console.log('decashInput result',inputData);
+// console.log('decashInput result',inputData);
 
 _inputText = '';
 let obj = {

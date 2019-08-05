@@ -34,9 +34,9 @@ function sleep(delay) {
 */
 
 var getAccounts = web3.thk.GetAccount(web3.thk.defaultChainId, web3.thk.defaultAddress);
-console.log("get account :", getAccounts);
+// console.log("get account :", getAccounts);
 var getStatsResp = web3.thk.GetStats('2');
-console.log('get states :', getStatsResp);
+// console.log('get states :', getStatsResp);
 _nonce = getAccounts.nonce.toString();
 _heightNum = getStatsResp.currentheight + 200;
 let valueNum =  1000000000000000;
