@@ -1,6 +1,6 @@
 {
   "name": "web3.js-thk",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Ethereum JavaScript API, middleware to talk to a ethereum node over RPC",
   "main": "./index.js",
   "directories": {
