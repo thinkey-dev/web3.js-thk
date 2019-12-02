@@ -3010,27 +3010,43 @@ var ContractFactory = function (thk, abi) {
 
         var bytes = encodeConstructorParams(this.abi, args);
         options.data += bytes;
+        var balance = this.thk.GetAccount(this.thk.defaultChainId, this.thk.defaultAddress);
 
+        let tx = {
+            chainId: this.thk.defaultChainId,
+            fromChainId: this.thk.defaultChainId,
+            toChainId: this.thk.defaultChainId,
+            from: this.thk.defaultAddress,
+            to: "",
+            nonce: balance['nonce'].toString(),
+            value: "0",
+            input: options.data,
+        }
+        this.thk.signTransaction(tx, this.thk.defaultPrivateKey)
         if (callback) {
+            var hash = this.thk.SendTx(tx);
 
+            // contract.transactionHash = hash.TXhash;
+            callback(null, hash.TXhash);
+
+            // checkForContractAddress(contract);
             // wait for the contract address and check if the code was deployed
-            this.thk.SendTx(options, function (err, hash) {
-                if (err) {
-                    callback(err);
-                } else {
-                    // add the transaction hash
-                    contract.transactionHash = hash;
+            // this.thk.SendTx(tx, function (err, hash) {
+            //     if (err) {
+            //         callback(err);
+            //     } else {
+            //         // add the transaction hash
+            //         contract.transactionHash = hash.TXhash;
+            //         // call callback for the first time
+            //         callback(null, contract);
 
-                    // call callback for the first time
-                    callback(null, contract);
-
-                    checkForContractAddress(contract, callback);
-                }
-            });
+            //         // checkForContractAddress(contract, callback);
+            //     }
+            // });
         } else {
-            var hash = this.thk.SendTx(options);
+            var hash = this.thk.SendTx(tx);
             // add the transaction hash
-            contract.transactionHash = hash;
+            contract.transactionHash = hash.TXhash;
             checkForContractAddress(contract);
         }
 
@@ -4101,7 +4117,7 @@ SolidityFunction.prototype.toPayload = function (args) {
         from: options.from,
         to: options.to,
         nonce: options.nonce,
-        value: options.value,
+        value: options.value || '0',
         input: options.input
     }
     this._thk.signTransaction(result, this._thk.defaultPrivateKey)
@@ -32543,7 +32559,7 @@ module.exports={
   "_args": [
     [
       "elliptic@6.4.1",
-      "D:\\web3"
+      "/Users/thinkey/demo/turbo/web3.js-thk"
     ]
   ],
   "_from": "elliptic@6.4.1",
@@ -32567,7 +32583,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.1.tgz",
   "_spec": "6.4.1",
-  "_where": "D:\\web3",
+  "_where": "/Users/thinkey/demo/turbo/web3.js-thk",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"

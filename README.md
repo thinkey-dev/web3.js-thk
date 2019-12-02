@@ -492,86 +492,120 @@ response:
 
 ```
 
-# 9. 编译合约(web3.thk.CompileContract)
+# 9. 编译合约(solc.compile)
+
+**Web3.js-thk项目example目录contractTest.js 文件有示例**
 
 请求参数
-           
 
-|  参数名  |  类型  | 是否必须 |   含义   |
-| :------: | :----: | :------: | :------: |
-| chainId  | string |   true   |   链id   |
-| contract | string |   true   | 合约代码 |
-
-响应参数:
-           
-
-| 参数名 |  类型  | 是否必须 |       含义       |
-| :----: | :----: | :------: | :--------------: |
-|  code  | string |   true   | 编译后的合约代码 |
-|  info  |  dict  |   true   |     合约信息     |
+```javascript
+var input = {
+    language: 'Solidity',
+    sources: {
+        'test.sol': {      //合约文件名称
+          content: contractContent     //合约文件内容
+        }
+    },
+    settings: {
+        outputSelection: {
+            '*': {
+              '*': ['*']
+            }
+        }
+    }
+};
+```
 
 请求示例:
 
 ```javascript
-var response = web3.thk.CompileContract('2', 'pragma solidity >= 0.4.0;contract test {uint storedData; function set(uint x) public { storedData = x;} function get() public view returns (uint) { return storedData;}}');
 
-```
-
-```json
-response:
-{
-    "test": {
-        "code": "0x608060405234801561001057600080fd5b5060be8061001f6000396000f3fe6080604052348015600f57600080fd5b5060043610604e577c0100000000000000000000000000000000000000000000000000000000600035046360fe47b1811460535780636d4ce63c14606f575b600080fd5b606d60048036036020811015606757600080fd5b50356087565b005b6075608c565b60408051918252519081900360200190f35b600055565b6000549056fea165627a7a723058205f13a3c1870823036833f92b7ac23a38f4bb1d9b737c36f0ea70ded514af2a6c0029",
-        "info": {
-            "source": "pragma solidity >= 0.4.0;contract test {uint storedData; function set(uint x) public { storedData = x;} function get() public view returns (uint) { return storedData;}}",
-            "language": "Solidity",
-            "languageVersion": "0.5.2",
-            "compilerVersion": "0.5.2",
-            "compilerOptions": "--combined-json bin,abi,userdoc,devdoc,metadata --optimize",
-            "abiDefinition": [
-                {
-                    "constant": false,
-                    "inputs": [
-                        {
-                            "name": "x",
-                            "type": "uint256"
-                        }
-                    ],
-                    "name": "set",
-                    "outputs": [],
-                    "payable": false,
-                    "stateMutability": "nonpayable",
-                    "type": "function"
-                },
-                {
-                    "constant": true,
-                    "inputs": [],
-                    "name": "get",
-                    "outputs": [
-                        {
-                            "name": "",
-                            "type": "uint256"
-                        }
-                    ],
-                    "payable": false,
-                    "stateMutability": "view",
-                    "type": "function"
-                }
-            ],
-            "userDoc": {
-                "methods": {}
-            },
-            "developerDoc": {
-                "methods": {}
-            },
-            "metadata": "{\"compiler\":{\"version\":\"0.5.2+commit.1df8f40c\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"x\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"<stdin>\":\"test\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"<stdin>\":{\"keccak256\":\"0xa906fc7673818a545ec91bd707cee4d4549c5bf8ae684ddfcee70b0417fd07df\",\"urls\":[\"bzzr://fa15822d315f9ccb19e8e3f658c14e843995e90d9ba8a142ed144edd26eb017b\"]}},\"version\":1}"
+var solc = require('solc');
+function getCompileContract(contractContent){    //合约可能有多个
+    var input = {
+        language: 'Solidity',
+        sources: {
+          'test.sol': {
+            content: contractContent
+          }
+        },
+        settings: {
+          outputSelection: {
+            '*': {
+              '*': ['*']
+            }
+          }
         }
-    }
+      };
+      
+    var output = JSON.parse(solc.compile(JSON.stringify(input)));
+    // for (var contractName in output.contracts['test.sol']) {
+    //     console.log(
+    //         contractName + ': '
+    //         + output.contracts['test.sol'][contractName]
+    //     );
+    // }
+    return output.contracts['test.sol']       
+    //output.contracts里面可能有多个合约文件，key文件名称
 }
+let contents = 'pragma solidity >= 0.5.0;contract MyFirst{uint256 a = 21233;string str = "Hello";function getA() public view returns(uint256 data){return a;}function getString() public view returns(string memory data){return str;}function setString(string memory data) public{str = data;}}'
+var contractObj_MyFirst = getCompileContract(contents)['MyFirst'];    //返回合约对象里面可能有多个contract类， key为contract名称
+var contractAbi = contractObj_MyFirst.abi;
+var contractByteCode = contractObj_MyFirst.evm.bytecode.object.slice(0,2) === '0x' ? contractObj_MyFirst.evm.bytecode.object : '0x'+contractObj_MyFirst.evm.bytecode.object;
+
+
+//最后获取合约abi 和 byteCode 字节码
+```
+
+# 10. 部署合约（web3.thk.contract(abi).new({data: code});）
+
+# 调用合约方法 (web3.thk.contract(abis,contractAddress).at(contractAddress))
+
+**Web3.js-thk项目example目录contractTest.js 文件有示例**
+
+请求参数
+
+```javascript
+var contractAbi = contractObj_MyFirst.abi;
+var contractByteCode = contractObj_MyFirst.evm.bytecode.object.slice(0,2) === '0x' ? contractObj_MyFirst.evm.bytecode.object : '0x'+contractObj_MyFirst.evm.bytecode.object;
+//编译合约生成的abi 和byteCode 字节码
+```
+
+请求示例:
+
+```javascript
+//部署合约 参数为合约abi 和 byteCode 字节码
+function deployContract(abis, codes){
+    let contracts = web3.thk.contract(abis).new({data: codes});
+    if(contracts.transactionHash){
+        sleep(5000)
+        var conresp = web3.thk.GetTransactionByHash(web3.thk.defaultChainId, contracts.transactionHash);
+        return conresp.contractAddress
+    }
+    return ''
+}
+//发布合约
+var contractAddress = deployContract(contractAbi,contractByteCode)
+console.log('get contract address',contractAddress, contractAbi);
+//返回的为部署后的合约地址
+
+
+//获取合约对象，调用合约方法，参数为合约abi 和 合约地址
+function callContractObj(abis, address){
+    let contractObj = web3.thk.contract(abis,address).at(address);
+    return contractObj;
+}
+var MyContract = callContractObj(contractAbi,contractAddress)
+//调用合约内的 setString  和 getString方法
+MyContract.setString("world")
+sleep(5000)    //合约内的修改方法需要等待hash成功后，此处等待5秒，酌情修改等待时长
+console.log("get contract function res:",MyContract.getString());
 
 ```
 
-# 10 ping（web3.thk.Ping）
+# 
+
+# 11. ping（web3.thk.Ping）
 
 请求参数
            
@@ -628,7 +662,7 @@ response:
 
 ```
 
-# 11、生成支票的证明(web3.thk.RpcMakeVccProof)
+# 12. 生成支票的证明(web3.thk.RpcMakeVccProof)
 
 请求参数
            
@@ -684,7 +718,7 @@ response:
 
 ```
 
-# 12、生成取消支票的证明(web3.thk.MakeCCCExistenceProof)
+# 13. 生成取消支票的证明(web3.thk.MakeCCCExistenceProof)
 
 请求参数
            
@@ -742,7 +776,7 @@ response:
 
 ```
 
-# 13、获取链结构（ web3.thk.GetChainInfo）
+# 14. 获取链结构（ web3.thk.GetChainInfo）
 
 请求参数
            
@@ -863,7 +897,7 @@ response:
 
 ```
 
-# 14、获取委员会详情（web3.thk.GetCommittee）
+# 15. 获取委员会详情（web3.thk.GetCommittee）
 
 请求参数
            
@@ -901,7 +935,7 @@ response:
 
 ```
 
-# 15. 新建一个合约对象(web3.thk.contract)
+# 16. 新建一个合约对象(web3.thk.contract)
 
 请求参数
            
